@@ -175,103 +175,171 @@ function uploadSheet(id){
   }
   runScript();
 }
+
+
+
+//************************************************************************************************************************************************************************
+
+function getByName(colName, row) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("datasheet");
+  var data = sheet.getDataRange().getValues();
+  var col = data[0].indexOf(colName);
+  if (col != -1) {
+    return data[row-1][col];
+  }
+}
+
+function getByName2(data, colName, row) {
+  var col = data[0].indexOf(colName);
+  if (col != -1) {
+    return data[row-1][col];
+  }
+}
+
+
 //************************************************************************************************************************************************************************
 //Update the output by the entry row on datasheet
 function updateDataTemplate(datasheet, target, current, semester, semesters){
+
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("datasheet");
+  var data = sheet.getDataRange().getValues();
   
   semesters = semesters.split(" ");
-  target.getRange('C1').setValue("='"+datasheet+"'!A"+current); //Instructor
-  target.getRange('C2').setValue("='"+datasheet+"'!B"+current); //Class  
+  target.getRange('C1').setValue(getByName2(data,"Instructor", current)) //Instructor
+  target.getRange('C2').setValue(getByName2(data,"COURSE",current)); //Class  
+   target.getRange('C3').setValue(getByName2(data,"Term_Year",current)); //Class  
   
   /*CLASS */
-  target.getRange('B27').setValue("='"+datasheet+"'!G"+current);
-  target.getRange('C27').setValue("='"+datasheet+"'!H"+current);
-  target.getRange('D27').setValue("='"+datasheet+"'!F"+current);
+  target.getRange('B33').setValue(getByName2(data,"CGPA",current));
+  target.getRange('C33').setValue(getByName2(data,"DFW",current));
+  target.getRange('D33').setValue(getByName2(data,"PGPA",current));
   /*COURSE */
-  target.getRange('B28').setValue("=INDEX('"+datasheet+"'!G:G,MATCH('"+datasheet+"'!$C"+current+",'"+datasheet+"'!$B:$B,0))");
-  target.getRange('C28').setValue("=INDEX('"+datasheet+"'!H:H,MATCH('"+datasheet+"'!$C"+current+",'"+datasheet+"'!$B:$B,0))");
-  target.getRange('D28').setValue("=INDEX('"+datasheet+"'!F:F,MATCH('"+datasheet+"'!$C"+current+",'"+datasheet+"'!$B:$B,0))");
+  target.getRange('B34').setValue(getByName2(data,"Common_CGPA",current));
+  target.getRange('C34').setValue(getByName2(data,"Common_DFW",current));
+  target.getRange('D34').setValue(getByName2(data,"Common_PGPA",current));
   /* GROUP */ 
-  target.getRange('B29').setValue("=INDEX('"+datasheet+"'!G:G,MATCH('"+datasheet+"'!$D"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('C29').setValue("=INDEX('"+datasheet+"'!H:H,MATCH('"+datasheet+"'!$D"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('D29').setValue("=INDEX('"+datasheet+"'!F:F,MATCH('"+datasheet+"'!$D"+current+",'"+datasheet+"'!$C:$C,0))");
+  target.getRange('B35').setValue(getByName2(data,"Group_CGPA",current));
+  target.getRange('C35').setValue(getByName2(data,"Group_DFW",current));
+  target.getRange('D35').setValue(getByName2(data,"Group_CGPA",current));
   /* DEPT */
-  target.getRange('B30').setValue("=INDEX('"+datasheet+"'!G:G,MATCH('"+datasheet+"'!$W"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('C30').setValue("=INDEX('"+datasheet+"'!H:H,MATCH('"+datasheet+"'!$W"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('D30').setValue("=INDEX('"+datasheet+"'!F:F,MATCH('"+datasheet+"'!$W"+current+",'"+datasheet+"'!$C:$C,0))");
+  target.getRange('B36').setValue(getByName2(data,"Dept_CGPA",current));
+  target.getRange('C36').setValue(getByName2(data,"Dept_DFW",current));
+  target.getRange('D36').setValue(getByName2(data,"Dept_CGPA",current));
   
   //Grade Distribution
-  target.getRange('B34').setValue("='"+datasheet+"'!X"+current);
-  target.getRange('C34').setValue("='"+datasheet+"'!Y"+current);
-  target.getRange('D34').setValue("='"+datasheet+"'!Z"+current);
-  target.getRange('E34').setValue("='"+datasheet+"'!AA"+current);
-  target.getRange('F34').setValue("='"+datasheet+"'!AB"+current);
-  target.getRange('G34').setValue("='"+datasheet+"'!AC"+current);
-  target.getRange('H34').setValue("='"+datasheet+"'!AD"+current);  
+  target.getRange('B40').setValue(getByName2(data,"percent_A",current));
+  target.getRange('C40').setValue(getByName2(data,"percent_B",current));
+  target.getRange('D40').setValue(getByName2(data,"percent_C",current));
+  target.getRange('E40').setValue(getByName2(data,"percent_D",current));
+  target.getRange('F40').setValue(getByName2(data,"percent_F",current));
+  target.getRange('G40').setValue(getByName2(data,"percent_W",current));
+  target.getRange('H40').setValue(getByName2(data,"percent_X",current));
   
-  target.getRange('B35').setValue("=INDEX('"+datasheet+"'!X:X,MATCH('"+datasheet+"'!C"+current+",'"+datasheet+"'!$B:$B,0))");
-  target.getRange('C35').setValue("=INDEX('"+datasheet+"'!Y:Y,MATCH('"+datasheet+"'!C"+current+",'"+datasheet+"'!$B:$B,0))");
-  target.getRange('D35').setValue("=INDEX('"+datasheet+"'!Z:Z,MATCH('"+datasheet+"'!C"+current+",'"+datasheet+"'!$B:$B,0))");
-  target.getRange('E35').setValue("=INDEX('"+datasheet+"'!AA:AA,MATCH('"+datasheet+"'!C"+current+",'"+datasheet+"'!$B:$B,0))");
-  target.getRange('F35').setValue("=INDEX('"+datasheet+"'!AB:AB,MATCH('"+datasheet+"'!C"+current+",'"+datasheet+"'!$B:$B,0))");
-  target.getRange('G35').setValue("=INDEX('"+datasheet+"'!AC:AC,MATCH('"+datasheet+"'!C"+current+",'"+datasheet+"'!$B:$B,0))");
-  target.getRange('H35').setValue("=INDEX('"+datasheet+"'!AD:AD,MATCH('"+datasheet+"'!C"+current+",'"+datasheet+"'!$B:$B,0))");
+  target.getRange('B41').setValue(getByName2(data,"Common_percent_A",current));
+  target.getRange('C41').setValue(getByName2(data,"Common_percent_B",current));
+  target.getRange('D41').setValue(getByName2(data,"Common_percent_C",current));
+  target.getRange('E41').setValue(getByName2(data,"Common_percent_D",current));
+  target.getRange('F41').setValue(getByName2(data,"Common_percent_F",current));
+  target.getRange('G41').setValue(getByName2(data,"Common_percent_W",current));
+  target.getRange('H41').setValue(getByName2(data,"Common_percent_X",current));
   
-  target.getRange('B36').setValue("=INDEX('"+datasheet+"'!X:X,MATCH('"+datasheet+"'!D"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('C36').setValue("=INDEX('"+datasheet+"'!Y:Y,MATCH('"+datasheet+"'!D"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('D36').setValue("=INDEX('"+datasheet+"'!Z:Z,MATCH('"+datasheet+"'!D"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('E36').setValue("=INDEX('"+datasheet+"'!AA:AA,MATCH('"+datasheet+"'!D"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('F36').setValue("=INDEX('"+datasheet+"'!AB:AB,MATCH('"+datasheet+"'!D"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('G36').setValue("=INDEX('"+datasheet+"'!AC:AC,MATCH('"+datasheet+"'!D"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('H36').setValue("=INDEX('"+datasheet+"'!AD:AD,MATCH('"+datasheet+"'!D"+current+",'"+datasheet+"'!$C:$C,0))");
+  target.getRange('B42').setValue(getByName2(data,"Group_percent_A",current));
+  target.getRange('C42').setValue(getByName2(data,"Group_percent_B",current));
+  target.getRange('D42').setValue(getByName2(data,"Group_percent_C",current));
+  target.getRange('E42').setValue(getByName2(data,"Group_percent_D",current));
+  target.getRange('F42').setValue(getByName2(data,"Group_percent_F",current));
+  target.getRange('G42').setValue(getByName2(data,"Group_percent_W",current));
+  target.getRange('H42').setValue(getByName2(data,"Group_percent_X",current));
   
-  target.getRange('B37').setValue("=INDEX('"+datasheet+"'!X:X,MATCH('"+datasheet+"'!W"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('C37').setValue("=INDEX('"+datasheet+"'!Y:Y,MATCH('"+datasheet+"'!W"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('D37').setValue("=INDEX('"+datasheet+"'!Z:Z,MATCH('"+datasheet+"'!W"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('E37').setValue("=INDEX('"+datasheet+"'!AA:AA,MATCH('"+datasheet+"'!W"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('F37').setValue("=INDEX('"+datasheet+"'!AB:AB,MATCH('"+datasheet+"'!W"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('G37').setValue("=INDEX('"+datasheet+"'!AC:AC,MATCH('"+datasheet+"'!W"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('H37').setValue("=INDEX('"+datasheet+"'!AD:AD,MATCH('"+datasheet+"'!W"+current+",'"+datasheet+"'!$C:$C,0))");
+  target.getRange('B43').setValue(getByName2(data,"Dept_percent_A",current));
+  target.getRange('C43').setValue(getByName2(data,"Dept_percent_B",current));
+  target.getRange('D43').setValue(getByName2(data,"Dept_percent_C",current));
+  target.getRange('E43').setValue(getByName2(data,"Dept_percent_D",current));
+  target.getRange('F43').setValue(getByName2(data,"Dept_percent_F",current));
+  target.getRange('G43').setValue(getByName2(data,"Dept_percent_W",current));
+  target.getRange('H43').setValue(getByName2(data,"Dept_percent_X",current));
   
   //Student Evaluation Information
-  target.getRange('E7').setValue("='"+datasheet+"'!P"+current);
-  target.getRange('E8').setValue("='"+datasheet+"'!E"+current);
-  target.getRange('E9').setValue("=INDEX('"+datasheet+"'!P:P,MATCH('"+datasheet+"'!D"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('E10').setValue("=INDEX('"+datasheet+"'!P:P,MATCH('"+datasheet+"'!W"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('E11').setValue("='"+datasheet+"'!AE"+current);
-  target.getRange('E12').setValue("=INDEX('"+datasheet+"'!AE:AE,MATCH('"+datasheet+"'!C"+current+",'"+datasheet+"'!$B:$B,0))");
-  target.getRange('E13').setValue("=INDEX('"+datasheet+"'!D:D,MATCH('"+datasheet+"'!D"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('E14').setValue("=INDEX('"+datasheet+"'!D:D,MATCH('"+datasheet+"'!W"+current+",'"+datasheet+"'!$C:$C,0))");
+  target.getRange('E7').setValue(getByName2(data,"responseInSection",current));
+  target.getRange('E8').setValue(getByName2(data,"RespN",current));
+  target.getRange('E9').setValue(getByName2(data,"Group_resp_sections",current));
+  target.getRange('E10').setValue(getByName2(data,"Dept_responseInSection",current));
+  target.getRange('E11').setValue("N/A");
+  target.getRange('E12').setValue("N/A");
+  target.getRange('E13').setValue(getByName2(data,"Group_sections",current));
+  target.getRange('E14').setValue(getByName2(data,"Dept_sections",current));
   
   //Determine which semester is listed
-  for (var x = 0; x < semesters.length; x++){
-    if (semester == semesters[x]){
+//  for (var x = 0; x < semesters.length; x++){
+//    if (semester == semesters[x]){
       
       //Evaluation Questions
-      target.getRange(18,8-x).setValue("='"+datasheet+"'!Q"+current).setFontWeight("bold").setHorizontalAlignment("center");
-      target.getRange(19,8-x).setValue("='"+datasheet+"'!R"+current).setFontWeight("bold").setHorizontalAlignment("center");
-      target.getRange(20,8-x).setValue("='"+datasheet+"'!S"+current).setFontWeight("bold").setHorizontalAlignment("center");
-      target.getRange(21,8-x).setValue("='"+datasheet+"'!T"+current).setFontWeight("bold").setHorizontalAlignment("center");
-      target.getRange(22,8-x).setValue("='"+datasheet+"'!U"+current).setFontWeight("bold").setHorizontalAlignment("center");
-      target.getRange(23,8-x).setValue("='"+datasheet+"'!V"+current).setFontWeight("bold").setHorizontalAlignment("center");
-      
-    }
-  }
+//      target.getRange(18,8-x).setValue("='"+datasheet+"'!Q"+current).setFontWeight("bold").setHorizontalAlignment("center");
+//      target.getRange(19,8-x).setValue("='"+datasheet+"'!R"+current).setFontWeight("bold").setHorizontalAlignment("center");
+//      target.getRange(20,8-x).setValue("='"+datasheet+"'!S"+current).setFontWeight("bold").setHorizontalAlignment("center");
+//      target.getRange(21,8-x).setValue("='"+datasheet+"'!T"+current).setFontWeight("bold").setHorizontalAlignment("center");
+//      target.getRange(22,8-x).setValue("='"+datasheet+"'!U"+current).setFontWeight("bold").setHorizontalAlignment("center");
+//      target.getRange(23,8-x).setValue("='"+datasheet+"'!V"+current).setFontWeight("bold").setHorizontalAlignment("center");
+//      
+//    }
+//  }
   
-  target.getRange('I18').setValue("=INDEX('"+datasheet+"'!Q:Q,MATCH('"+datasheet+"'!$D"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('I19').setValue("=INDEX('"+datasheet+"'!R:R,MATCH('"+datasheet+"'!$D"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('I20').setValue("=INDEX('"+datasheet+"'!S:S,MATCH('"+datasheet+"'!$D"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('I21').setValue("=INDEX('"+datasheet+"'!T:T,MATCH('"+datasheet+"'!$D"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('I22').setValue("=INDEX('"+datasheet+"'!U:U,MATCH('"+datasheet+"'!$D"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('I23').setValue("=INDEX('"+datasheet+"'!V:V,MATCH('"+datasheet+"'!$D"+current+",'"+datasheet+"'!$C:$C,0))");
+  target.getRange('H18').setValue(getByName2(data,"Q1A",current));
+  target.getRange('H19').setValue(getByName2(data,"Q2A",current));
+  target.getRange('H20').setValue(getByName2(data,"Q3A",current));
+  target.getRange('H21').setValue(getByName2(data,"Q4A",current));
+  target.getRange('H22').setValue(getByName2(data,"Q5A",current));
+  target.getRange('H23').setValue(getByName2(data,"Q6A",current));
+  target.getRange('H24').setValue(getByName2(data,"Q7A",current));
+  target.getRange('H25').setValue(getByName2(data,"Q8A",current));  
+  target.getRange('H26').setValue(getByName2(data,"Q9A",current));
+  target.getRange('H27').setValue(getByName2(data,"Q10A",current));
+  target.getRange('H28').setValue(getByName2(data,"Q11A",current));  
+  target.getRange('H29').setValue(getByName2(data,"Q12A",current));
   
-  target.getRange('J18').setValue("=INDEX('"+datasheet+"'!Q:Q,MATCH('"+datasheet+"'!$W"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('J19').setValue("=INDEX('"+datasheet+"'!R:R,MATCH('"+datasheet+"'!$W"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('J20').setValue("=INDEX('"+datasheet+"'!S:S,MATCH('"+datasheet+"'!$W"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('J21').setValue("=INDEX('"+datasheet+"'!T:T,MATCH('"+datasheet+"'!$W"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('J22').setValue("=INDEX('"+datasheet+"'!U:U,MATCH('"+datasheet+"'!$W"+current+",'"+datasheet+"'!$C:$C,0))");
-  target.getRange('J23').setValue("=INDEX('"+datasheet+"'!V:V,MATCH('"+datasheet+"'!$W"+current+",'"+datasheet+"'!$C:$C,0))");     
+  target.getRange('I18').setValue(getByName2(data,"Group_Q1A",current));
+  target.getRange('I19').setValue(getByName2(data,"Group_Q2A",current));
+  target.getRange('I20').setValue(getByName2(data,"Group_Q3A",current));
+  target.getRange('I21').setValue(getByName2(data,"Group_Q4A",current));
+  target.getRange('I22').setValue(getByName2(data,"Group_Q5A",current));
+  target.getRange('I23').setValue(getByName2(data,"Group_Q6A",current));
+  target.getRange('I24').setValue(getByName2(data,"Group_Q7A",current));
+  target.getRange('I25').setValue(getByName2(data,"Group_Q8A",current)); 
+  target.getRange('I26').setValue(getByName2(data,"Group_Q9A",current));
+  target.getRange('I27').setValue(getByName2(data,"Group_Q10A",current));
+  target.getRange('I28').setValue(getByName2(data,"Group_Q11A",current));
+  target.getRange('I29').setValue(getByName2(data,"Group_Q12A",current));
+  
+  target.getRange('J18').setValue(getByName2(data,"Dept_Q1A",current));
+  target.getRange('J19').setValue(getByName2(data,"Dept_Q2A",current));
+  target.getRange('J20').setValue(getByName2(data,"Dept_Q3A",current));
+  target.getRange('J21').setValue(getByName2(data,"Dept_Q4A",current));
+  target.getRange('J22').setValue(getByName2(data,"Dept_Q5A",current));
+  target.getRange('J23').setValue(getByName2(data,"Dept_Q6A",current)); 
+  target.getRange('J24').setValue(getByName2(data,"Dept_Q7A",current)); 
+  target.getRange('J25').setValue(getByName2(data,"Dept_Q8A",current)); 
+  target.getRange('J26').setValue(getByName2(data,"Dept_Q9A",current)); 
+  target.getRange('J27').setValue(getByName2(data,"Dept_Q10A",current)); 
+  target.getRange('J28').setValue(getByName2(data,"Dept_Q11A",current)); 
+  target.getRange('J29').setValue(getByName2(data,"Dept_Q12A",current)); 
+  
+  target.getRange('G18').setValue(getByName2(data,"F17_Q1A",current));
+  target.getRange('G19').setValue(getByName2(data,"F17_Q2A",current));
+  target.getRange('G20').setValue(getByName2(data,"F17_Q3A",current));
+  target.getRange('G21').setValue(getByName2(data,"F17_Q4A",current));
+  target.getRange('G22').setValue(getByName2(data,"F17_Q5A",current));
+  target.getRange('G23').setValue(getByName2(data,"F17_Q6A",current));
+  target.getRange('G24').setValue(getByName2(data,"F17_Q7A",current));
+  target.getRange('G25').setValue(getByName2(data,"F17_Q8A",current));
+  target.getRange('G26').setValue(getByName2(data,"F17_Q9A",current));
+  target.getRange('G27').setValue(getByName2(data,"F17_Q10A",current));
+  target.getRange('G28').setValue(getByName2(data,"F17_Q11A",current));
+  target.getRange('G29').setValue(getByName2(data,"F17_Q12A",current));
+  
 }
+
+
+
 //************************************************************************************************************************************************************************
 function copyRowsToEnd(source, target, pageBreak)
 {
