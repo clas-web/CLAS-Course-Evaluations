@@ -11,27 +11,13 @@ function onOpen() {
   var spreadsheet = SpreadsheetApp.getActive();
   var menuItems = [
     {name: 'Run Script', functionName: 'runScript'},
-    //{name: 'Print Output as a PDF', functionName: 'printPDF'}, 
+    {name: 'Print Output as a PDF', functionName: 'printPDF'}, 
     //{name: 'Force Quit', functionName: 'breakOperation'},   
   ];
     spreadsheet.addMenu('Generate Sheets', menuItems);
     }
+    
     //************************************************************************************************************************************************************************
-    //Create selector
-    function showPicker() {
-    var html = HtmlService.createHtmlOutputFromFile('Picker.html')
-    .setWidth(600)
-    .setHeight(425)
-    .setSandboxMode(HtmlService.SandboxMode.IFRAME);
-    SpreadsheetApp.getUi().showModalDialog(html, 'Select Folder');
-    }
-    //**********************************************************************************************************************************************************************************************
-    //Authorize script
-    function getOAuthToken() {
-    DriveApp.getRootFolder();
-    return ScriptApp.getOAuthToken();
-    }
-    //**********************************************************************************************************************************************************************************************
     //Run the script
     function runScript(){  
     
@@ -100,85 +86,6 @@ function onOpen() {
   //Logger.log(output.getCode());
 }
 //************************************************************************************************************************************************************************    
-//import datasheet(s) using the Picker
-/**
-* @NotOnlyCurrentDoc
-*/
-function uploadSheet(id){  
-  var currentDate = new Date();
-  var file = DriveApp.getFileById(id);
-  Logger.log(file.getMimeType());
-  var sheet = SpreadsheetApp.getActiveSpreadsheet();
-  
-  // Is the attachment a CSV file?  
-  if (file.getMimeType() == "text/csv") {    
-    Logger.log("CSV sheet");
-    var htmlOutput = HtmlService.createHtmlOutput('<title>Please wait...</title> Importing CSV...');
-    SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'Saving...');    
-    try{
-      var newDataSheet = sheet.insertSheet('datasheet-'+currentDate);
-    }catch(e){
-      var newDataSheet = sheet.insertSheet('datasheet-');
-    }
-    var csvData = Utilities.parseCsv(file.getBlob().getDataAsString(), ",");
-    newDataSheet.getRange(1, 1, csvData.length, csvData[0].length).setValues(csvData);    
-    
-    // Is the attachment a Google Sheet?
-  } else if(file.getMimeType() == "application/vnd.google-apps.spreadsheet"){      
-    Logger.log("Google Sheet");
-    //import all sheets of importing spreadsheet
-    var htmlOutput = HtmlService.createHtmlOutput('<title>Please wait...</title> Importing Google Sheet...');
-    SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'Saving...');
-    var SSSheets = SpreadsheetApp.openByUrl(file.getUrl()).getSheets();
-    for (var n=0; n < SSSheets.length; n++){
-      // Get full range of data
-      var sheetRange = SSSheets[n].getDataRange();
-      // get the data values in range
-      var sheetData = sheetRange.getValues();
-      try{
-        var newDataSheet = sheet.insertSheet(file.getName()+"_"+SSSheets[n].getName()+"_"+currentDate);
-      }catch(e){
-        var newDataSheet = sheet.insertSheet(file.getName()+"_"+SSSheets[n].getName()+"_");
-      }
-      newDataSheet.getRange(1, 1, SSSheets[n].getLastRow(), SSSheets[n].getLastColumn()).setValues(sheetData);                        
-    }
-    
-    //Is the attachment an Excel file?
-  } else if (file.getMimeType() == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"){
-    Logger.log("Excel sheet");
-    var htmlOutput = HtmlService.createHtmlOutput('<title>Please wait...</title> Importing Excel Sheet...');
-    SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'Saving...');
-    //convert to Google Sheet
-    var convertedFile = {
-      title: file.getName()+"_"+currentDate
-    };
-    convertedFile = Drive.Files.insert(convertedFile,file, {
-      convert:true
-    });
-    //import Google Sheet
-    var SSSheets = SpreadsheetApp.openById(convertedFile.id).getSheets();
-    for (var n=0; n < SSSheets.length; n++){
-      // Get full range of data
-      var sheetRange = SSSheets[n].getDataRange();
-      // get the data values in range
-      var sheetData = sheetRange.getValues();
-      var newDataSheet = sheet.insertSheet(convertedFile.title+"_"+SSSheets[n].getName()+"");
-      newDataSheet.getRange(1, 1, SSSheets[n].getLastRow(), SSSheets[n].getLastColumn()).setValues(sheetData);                        
-    }      
-    
-    //Is the file not a CSV or Google Sheet? Then don't import
-    //Excel? May need to enable Google Drive API first: https://stackoverflow.com/questions/11681873/converting-xls-to-google-spreadsheet-in-google-apps-script
-    //https://developers.google.com/apps-script/guides/services/advanced
-  }else {
-    Logger.log('Not a CSV or Google Sheet');
-    SpreadsheetApp.getActiveSpreadsheet().toast("No datasheets imported", "Not a Spreadsheet");
-  }
-  runScript();
-}
-
-
-
-//************************************************************************************************************************************************************************
 
 function getByName(colName, row) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("datasheet");
@@ -200,14 +107,14 @@ function getByName2(data, colName, row) {
 //************************************************************************************************************************************************************************
 //Update the output by the entry row on datasheet
 function updateDataTemplate(datasheet, target, current, semester, semesters){
-
+  
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("datasheet");
   var data = sheet.getDataRange().getValues();
   
   semesters = semesters.split(" ");
   target.getRange('C1').setValue(getByName2(data,"Instructor", current)) //Instructor
   target.getRange('C2').setValue(getByName2(data,"COURSE",current)); //Class  
-   target.getRange('C3').setValue(getByName2(data,"Term_Year",current)); //Class  
+  target.getRange('C3').setValue(getByName2(data,"Term_Year",current)); //Class  
   
   /*CLASS */
   target.getRange('B33').setValue(getByName2(data,"CGPA",current));
@@ -270,19 +177,19 @@ function updateDataTemplate(datasheet, target, current, semester, semesters){
   target.getRange('E14').setValue(getByName2(data,"Dept_sections",current));
   
   //Determine which semester is listed
-//  for (var x = 0; x < semesters.length; x++){
-//    if (semester == semesters[x]){
-      
-      //Evaluation Questions
-//      target.getRange(18,8-x).setValue("='"+datasheet+"'!Q"+current).setFontWeight("bold").setHorizontalAlignment("center");
-//      target.getRange(19,8-x).setValue("='"+datasheet+"'!R"+current).setFontWeight("bold").setHorizontalAlignment("center");
-//      target.getRange(20,8-x).setValue("='"+datasheet+"'!S"+current).setFontWeight("bold").setHorizontalAlignment("center");
-//      target.getRange(21,8-x).setValue("='"+datasheet+"'!T"+current).setFontWeight("bold").setHorizontalAlignment("center");
-//      target.getRange(22,8-x).setValue("='"+datasheet+"'!U"+current).setFontWeight("bold").setHorizontalAlignment("center");
-//      target.getRange(23,8-x).setValue("='"+datasheet+"'!V"+current).setFontWeight("bold").setHorizontalAlignment("center");
-//      
-//    }
-//  }
+  //  for (var x = 0; x < semesters.length; x++){
+  //    if (semester == semesters[x]){
+  
+  //Evaluation Questions
+  //      target.getRange(18,8-x).setValue("='"+datasheet+"'!Q"+current).setFontWeight("bold").setHorizontalAlignment("center");
+  //      target.getRange(19,8-x).setValue("='"+datasheet+"'!R"+current).setFontWeight("bold").setHorizontalAlignment("center");
+  //      target.getRange(20,8-x).setValue("='"+datasheet+"'!S"+current).setFontWeight("bold").setHorizontalAlignment("center");
+  //      target.getRange(21,8-x).setValue("='"+datasheet+"'!T"+current).setFontWeight("bold").setHorizontalAlignment("center");
+  //      target.getRange(22,8-x).setValue("='"+datasheet+"'!U"+current).setFontWeight("bold").setHorizontalAlignment("center");
+  //      target.getRange(23,8-x).setValue("='"+datasheet+"'!V"+current).setFontWeight("bold").setHorizontalAlignment("center");
+  //      
+  //    }
+  //  }
   
   target.getRange('H18').setValue(getByName2(data,"Q1A",current));
   target.getRange('H19').setValue(getByName2(data,"Q2A",current));
@@ -338,24 +245,24 @@ function updateDataTemplate(datasheet, target, current, semester, semesters){
   
 }
 
-
-
 //************************************************************************************************************************************************************************
 function copyRowsToEnd(source, target, pageBreak)
 {
   /* You must use the copyValuesToRange function so the data values are copied, not the formulas.  
   You then use copyFormatToRange to copy the range. lastEntryStart is the start of the new data, lastEntryEnd the end. You must set them because getLastRow changes between the function calls. */
   
-  //Positions the active range so the new entry can be copied to the output  
-  var sourceVal = source.getRange(1,1,40+pageBreak,11);
-  var lastEntryStart = target.getLastRow()+2+pageBreak; //The plus two adds a row between outputs for readability and then starts the next report on the next row  
-  var lastEntryEnd = target.getLastRow()+40+pageBreak; //The 40 is the length of the template (38) plus 2 extra rows for readability, each entry report will be 40 rows total
+  //Modify page break
+  //pageBreak = pageBreak + 5;
+  
+  var sourceVal = source.getRange(1,1,measureLengthOfTemplate()+pageBreak,11);
+  var lastEntryStart = target.getLastRow()+pageBreak; //The plus two adds a row between outputs for readability and then starts the next report on the next row  
+  var lastEntryEnd = target.getLastRow()+measureLengthOfTemplate()+pageBreak; //The 40 is the length of the template (38) plus 2 extra rows for readability, each entry report will be 40 rows total
   
   //Prevents function from getting stopped at 1000 rows by adding 50 new rows to the end when we're nearing the limit
   if(target.getLastRow()>900){    
     target.insertRowsAfter(target.getLastRow(),50);
-    lastEntryStart = target.getLastRow()+2+pageBreak;
-    lastEntryEnd = target.getLastRow()+40+pageBreak;
+    lastEntryStart = target.getLastRow() + pageBreak;
+    lastEntryEnd = target.getLastRow()+measureLengthOfTemplate() + pageBreak;
     //Finally copy values and formatting to the output sheet
     sourceVal.copyValuesToRange(target,1,11,lastEntryStart,lastEntryEnd);
     sourceVal.copyFormatToRange(target,1,11,lastEntryStart,lastEntryEnd);    
@@ -373,7 +280,13 @@ function cloneGoogleSheet(datasheet, dept, semester, semesters) {
   Logger.log("semesters: "+semesters);
   var ss = SpreadsheetApp.getActiveSpreadsheet();  
   var sheet = ss.getSheetByName('Template').copyTo(ss);
-  var pageBreak = 15; //number of rows that will push the end of the report off the page for printing
+  
+  
+  //Positions the active range so the new entry can be copied to the output  
+  var fullPageLength = 55; //It takes 55 rows to make one page before data runs to the next page
+  var pageBreak = fullPageLength - measureLengthOfTemplate();
+  
+  //var pageBreak = 10; //number of rows that will push the end of the report off the page for printing
   var current = 1;
   
   //The datasheet is whatever sheet has our data on it
@@ -414,7 +327,7 @@ function cloneGoogleSheet(datasheet, dept, semester, semesters) {
   }
   //****************************************************************************    
   //Delete blank rows caused by page break
-  var blankRows = target.getRange(1, 1, pageBreak+1, 11).getDisplayValues();
+  var blankRows = target.getRange(1, 1, pageBreak-1, 11).getDisplayValues();
   var lineCounter = 0;
   
   //First make sure the lines aren't blank
@@ -433,7 +346,7 @@ function cloneGoogleSheet(datasheet, dept, semester, semesters) {
   //If the first couple of lines caused by pageBreak are empty, delete them
   if(lineCounter == 0){  
     Logger.log("First couple of rows are blank, delete first pageBreak since lines are empty");
-    target.deleteRows(1, pageBreak+1);
+    target.deleteRows(1, pageBreak-1);
   } else {   
     Logger.log(blankRows);
     Logger.log("Will not delete pageBreak since lines aren't empty, double check report page breaks...");
@@ -470,8 +383,8 @@ function cloneGoogleSheet(datasheet, dept, semester, semesters) {
 //Export the function as a PDF
 function printPDF(dept, results, semester, semesters){
   //***********************************************************************
-  dept = dept /*|| "AERO"*/;  
-  semester = semester /*|| "Fall-2017"*/;      
+  dept = dept || "AERO";  
+  semester = semester || "Spring-2018";      
   results = results || Browser.msgBox(
     'Would you like these reports emailed to you? \\n' +
     '\\nYes - Email you & save to Google Drive' +
@@ -479,7 +392,8 @@ function printPDF(dept, results, semester, semesters){
     Browser.Buttons.YES_NO);
   //***********************************************************************
   //Get sheet info
-  var sourceSheet = SpreadsheetApp.getActiveSpreadsheet();
+  var sourceSheet = SpreadsheetApp.openByUrl("https://docs.google.com/spreadsheets/d/1UjGSFvg4kTgNMqTKygdDr4uEngmMiJepknq6d5RBJoI/edit#gid=48727648") || SpreadsheetApp.getActiveSpreadsheet();
+  Logger.log(sourceSheet.getId());
   var outputSheet = sourceSheet.getSheetByName(dept + "-"+semester);
   var parentFolder; //Folder to save PDF in
   var currentDate = new Date();
