@@ -222,11 +222,11 @@ function updateDataTemplate(datasheet, target, current, semester, semesters){
   /* GROUP */ 
   target.getRange('B35').setValue(getByName2(data,"Group_CGPA",current));
   target.getRange('C35').setValue(getByName2(data,"Group_DFW",current));
-  target.getRange('D35').setValue(getByName2(data,"Group_CGPA",current));
+  target.getRange('D35').setValue(getByName2(data,"Group_PGPA",current));
   /* DEPT */
   target.getRange('B36').setValue(getByName2(data,"Dept_CGPA",current));
   target.getRange('C36').setValue(getByName2(data,"Dept_DFW",current));
-  target.getRange('D36').setValue(getByName2(data,"Dept_CGPA",current));
+  target.getRange('D36').setValue(getByName2(data,"Dept_PGPA",current));
   
   //Grade Distribution
   target.getRange('B40').setValue(getByName2(data,"percent_A",current));
